@@ -1,7 +1,8 @@
-#+Title: ClojureScript 
+#+Title: Back to the future: Cljs
 #+Author: Konrad Kühne & Christian Weilbach
 #+Email: ch_weil@topiq.es
 
+#+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
 #+OPTIONS: reveal_center:t reveal_progress:t reveal_history:t reveal_control:t
 #+OPTIONS: reveal_mathjax:t reveal_rolling_Links:t reveal_keyboard:t reveal_overview:t num:nil
 #+OPTIONS: reveal_slide_number:t
@@ -13,86 +14,95 @@
 #+REVEAL_TRANS: linear
 #+REVEAL_THEME: sky
 #+REVEAL_HLEVEL: 1
-#+REVEAL_HEAD_PREAMBLE: <meta name="description" content="geschichte, git-like CRDT">
-# +REVEAL_PREAMBLE: Applied to lambda
-# +REVEAL_POSTAMBLE: <p> Geoglyphs FP-prototype by C. Weilbach </p>
 
 
 * Introduction
   - professional frontend (app and web) and backend (JVM) developers with
     LivelyCode
-  - prior experience with JavaScript
-  - introduction with underscore.js and JSON data flow from web services (Sovanta)
+  - core devs of /isomorphic/ replikativ
+  - regular experience with JavaScript
+  - introduction to FP with underscore.js and JSON data flow from web services
   - functional programming zealots
   - pragmatic: Making /more/ money with /less/ work now.
     
 
 
 * Why?
-  - TODO Memes
+  [[./hickey_meme.jpg]]
 
-* JavaScript limitations
+* Language design
+  - LISP was invented in *1958*
   - Brandon Eich's design objective: Java-like script language
   - Time to design: *2 weeks !!!!*
-  - $\Rightarrow$ JavaScript language problems: http://destroyallsoftware.com
-  - comparison design effort JavaScript vs. Clojure: *2 weeks* vs. *2 years*
+  - $\Rightarrow$ JavaScript core language problems: http://destroyallsoftware.com/talks/wat
+  - comparison design effort JavaScript vs. Clojure: \\
+    *2 weeks* vs. *2 years*
   - not to speak of all the history in Lisp language design which has since been
-    ported to Clojure (for example MetaObject protocol as the best OO approach) 
-    TODO graphic
+    ported to Clojure (for example MetaObject protocol as the "best" OO
+    approach)
+    
     
 
-* Lisp as the original JavaScript
+* The original JavaScript
+#+BEGIN_NOTES
+  - JavaScript can be a *nice* language ("JavaScript the Good Parts")
+#+END_NOTES
   - Lisp (Scheme dialect) was intended as the /original/ JavaScript, before Java
     became so popular
-  - JavaScript can be a *nice* language ("JavaScript the Good Parts")
-  - very similar to imperative Lisps like Emacs-Lisp.
-  - *composition*: dynamic extension of small core language
-  - interpreter of itself can be written on a half a book page (or a little bit
-    more :), see chapter 4 of SICP TODO)
-  - Dynamic languages (e.g. Python, Ruby, JavaScript) always only cover a subset
-    of what Lisp can do for you: 100 year language. Paul Graham.
+  - JS similar to imperative Lisps like Emacs-Lisp
+  - *composition*: dynamic extension of small core language, like Scheme
+  - *interpreter of itself* can be expressed on half a page, (chapter 4 of SICP)
+  - Dynamic languages (e.g. Python, Ruby, JavaScript) subset of features of
+    Lisp: [[http://paulgraham.com/hundred.html][The hundred year language]]. Paul Graham.
     
 
-* Lisp 
-  - *Remove as much syntax as possible*: All code as data (homoiconic)
-  - "Lisp is the most important idea in Computer Science." Alan Kay
-  - imagine all JavaScript code being human-readable JSON: adapt language to
-    problem 
-  - $\Rightarrow$ *Lisp Macros*: Languages as libraries
-    * *go-lang* is implemented with macros in core.async: *no callback hell*
-    * *prolog* is implemented with core.logic: *relational programming*
-    * *statistics* is implemented with church: *probabilistic programming*
-    * *OCaml style pattern matching* is implemented with core.match
+* Language limitations
+  [[./callback-hell.jpg]]
+    
+
+* List Processing
+  - "Most important idea in Computer Science." Alan Kay
+  - *Remove as much syntax as possible*
+  - All code is simplest data structure: List (homoiconic)
+  - adapt language to problem \\
+    $\Rightarrow$ *Lisp Macros*: Languages as libraries
+    * *go-lang* as core.async: *no callback hell*
+    * *prolog* as core.logic: *relational programming*
+    * *statistics* as anglican: *probabilistic programming*
+    * *OCaml style pattern matching* as core.match
       ...
  
 
 * Functional programming
-  - not just first class functions
+  - not just /first class/ functions (closures)
   - but *pure* functions: functions that do not mutate their parameters or the
     environment, but just return a value
   - *value semantics*: true equality
   - Bret Victor about Haskell: "Language for 21st century."
     
-* Concrete problems with functional programming in JS
-  - But JavaScript core datastructures (JSON) are mutable
-  - functional programming possible, but practically impossible in an
-    environment of general imperative programming
-  - JavaScript libraries do not support functional programming in general
-  - current trend with TypeScript / EcmaScript class syntax rather in
-    /object-oriented/ direction like Java
+* Functional programming in JS
+  - JavaScript core datastructures (JSON) are mutable \\
+    $\Rightarrow$ no /real/ equality, parameters mutated by functions
+  - FP theoretically possible, but practically impossible on top of imperative
+    programming
+  - JS libraries do not support FP in general
+  - current trend with TypeScript / EcmaScript class syntax rather in /imperative
+    object-oriented/ direction like Java
 
 
 * ClojureScript and Clojure
+  - Clojure is a Lisp dialect for the JVM
+  - *persistent datastructures* for FP
   - ClojureScript is a port of Clojure to JavaScript
-  - both are hosted languages, exposing host primitives and abstractions instead
+  - both are /hosted languages/, exposing host primitives and abstractions instead
     of introducing their own: ClojureScript $\neq$ Clojure
-  - Clojure brings LiveCoding and massive concurrent programming to the JVM and
+  - Clojure brings live coding and strong concurrent programming to the JVM and
     CLR
   - Clojure and ClojureScript can be very nicely integrated, e.g. replikativ
 
 
     
-* ClojureScript 💘 JavaScript
+* Cljs 💘 JS
   - First class interop:
     * *All primitives* are JavaScript primitives
     * All ClojureScript functions are *normal JavaScript functions*
@@ -105,12 +115,16 @@
   
   
 * Live Coding
-  - redux, immutable: react state management inspired by Om TODO
-  - React material-ui 
-  - React native with planck TODO
+  - redux, immutable: react state management /inspired by/ [[https://github.com/omcljs/om/][Om]]
+  - React through [[http://www.material-ui.com/][material-ui]]
 
 * References
-  - Success stories ClojureScript
-  - ClojureScript Introduction TODO
-  - Om/React background
-  - Functional Programming Clojure background TODO
+  - Source code and presentation: https://github.com/replikativ/chat42
+  - [[https://github.com/boston-clojure/learning-clojure][Boston Clojure - learning resources]]
+  - [[https://github.com/bhauman/lein-figwheel/wiki/Quick-Start][Figwheel Quick Start]]
+  - [[https://www.railslove.com/stories/my-way-into-clojure-building-a-card-game-with-om-part-1][Background to Cljs webdev]]
+  - [[https://github.com/clojure/clojurescript/wiki/Companies-Using-ClojureScript][Some company web sites using cljs]]: Capital One, CircleCI, Cisco, Rackspace,
+    Thomson Reuters, ...
+  - [[http://clojure.org/community/companies][Many more use Clojure now]]: Facebook, Deutsche Bank, Daily Mail, Heroku,
+    Netflix, Oracle, Salesforce, SoundCloud, Walmart Labs, ...
+  - [[http://cljsrn.org/][ClojureScript + React Native]] 
