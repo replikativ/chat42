@@ -19,50 +19,90 @@
 
 
 * Introduction
-  - professional web frontend and backend developers with LivelyCode
+  - professional frontend (app and web) and backend (JVM) developers with
+    LivelyCode
   - prior experience with JavaScript
   - introduction with underscore.js and JSON data flow from web services (Sovanta)
   - functional programming zealots
+  - pragmatic: Making /more/ money with /less/ work now.
     
 
 
 * Why?
-  
-
-
-* Lisp as the original JavaScript
-  - Lisp is the /original/ JavaScript
-  - JavaScript can be a *nice* language ("JavaScript the Good Parts")
-  - *composition*: dynamic extension of small core language
-  - "Lisp is the most important idea in Computer Science." Alan Kay
-  - interpreter of itself can be written on a half a book page (or a little bit
-    more :), see chapter 4 of SICP TODO)
-  - 100 year language. Paul Graham.
-  - 
-   
+  - TODO Memes
 
 * JavaScript limitations
-  - Brandon Eich Java Syntax more popular
-  - JavaScript language problems TODO destroyallsoftware.com
-  - comparison design effort JavaScript vs. Clojure
+  - Brandon Eich's design objective: Java-like script language
+  - Time to design: *2 weeks !!!!*
+  - $\Rightarrow$ JavaScript language problems: http://destroyallsoftware.com
+  - comparison design effort JavaScript vs. Clojure: *2 weeks* vs. *2 years*
+  - not to speak of all the history in Lisp language design which has since been
+    ported to Clojure (for example MetaObject protocol as the best OO approach) 
+    TODO graphic
     
+
+* Lisp as the original JavaScript
+  - Lisp (Scheme dialect) was intended as the /original/ JavaScript, before Java
+    became so popular
+  - JavaScript can be a *nice* language ("JavaScript the Good Parts")
+  - very similar to imperative Lisps like Emacs-Lisp.
+  - *composition*: dynamic extension of small core language
+  - interpreter of itself can be written on a half a book page (or a little bit
+    more :), see chapter 4 of SICP TODO)
+  - Dynamic languages (e.g. Python, Ruby, JavaScript) always only cover a subset
+    of what Lisp can do for you: 100 year language. Paul Graham.
+    
+
+* Lisp 
+  - *Remove as much syntax as possible*: All code as data (homoiconic)
+  - "Lisp is the most important idea in Computer Science." Alan Kay
+  - imagine all JavaScript code being human-readable JSON: adapt language to
+    problem 
+  - $\Rightarrow$ *Lisp Macros*: Languages as libraries
+    * *go-lang* is implemented with macros in core.async: *no callback hell*
+    * *prolog* is implemented with core.logic: *relational programming*
+    * *statistics* is implemented with church: *probabilistic programming*
+    * *OCaml style pattern matching* is implemented with core.match
+      ...
+ 
 
 * Functional programming
   - not just first class functions
-  - quote of Bret Victor about Haskell "Language for 21st century."
   - but *pure* functions: functions that do not mutate their parameters or the
     environment, but just return a value
-
+  - *value semantics*: true equality
+  - Bret Victor about Haskell: "Language for 21st century."
     
-  
 * Concrete problems with functional programming in JS
   - But JavaScript core datastructures (JSON) are mutable
-  - functional programming possible, but very hard in an environment of general imperative programming
-  - libraries do not support functional programming in general
-  - current trend with TypeScript / EcmaScript class syntax rather in object
-    oriented direction like Java
-  - TODO Memes
+  - functional programming possible, but practically impossible in an
+    environment of general imperative programming
+  - JavaScript libraries do not support functional programming in general
+  - current trend with TypeScript / EcmaScript class syntax rather in
+    /object-oriented/ direction like Java
 
+
+* ClojureScript and Clojure
+  - ClojureScript is a port of Clojure to JavaScript
+  - both are hosted languages, exposing host primitives and abstractions instead
+    of introducing their own: ClojureScript $\neq$ Clojure
+  - Clojure brings LiveCoding and massive concurrent programming to the JVM and
+    CLR
+  - Clojure and ClojureScript can be very nicely integrated, e.g. replikativ
+
+
+    
+* ClojureScript 💘 JavaScript
+  - First class interop:
+    * *All primitives* are JavaScript primitives
+    * All ClojureScript functions are *normal JavaScript functions*
+    * DataStructures can be easily converted from and to JSON
+    * No overhead for large standard library or your code thanks to heavily optimizing
+      *Google Closure compiler* (used for GMail, ...)
+  - ClojureScript with functional programming strengthens the core value of
+    JavaScript: *Interactivity* and *Live Coding*
+    
+  
   
 * Live Coding
   - redux, immutable: react state management inspired by Om TODO
