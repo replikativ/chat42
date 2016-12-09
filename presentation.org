@@ -1,0 +1,76 @@
+#+Title: ClojureScript 
+#+Author: Konrad Kühne & Christian Weilbach
+#+Email: ch_weil@topiq.es
+
+#+OPTIONS: reveal_center:t reveal_progress:t reveal_history:t reveal_control:t
+#+OPTIONS: reveal_mathjax:t reveal_rolling_Links:t reveal_keyboard:t reveal_overview:t num:nil
+#+OPTIONS: reveal_slide_number:t
+# +OPTIONS: reveal_width:1420 reveal_height:1080
+#+OPTIONS: toc:nil
+#+REVEAL_MARGIN: 0.1
+#+REVEAL_MIN_SCALE: 0.6
+#+REVEAL_MAX_SCALE: 1.2
+#+REVEAL_TRANS: linear
+#+REVEAL_THEME: sky
+#+REVEAL_HLEVEL: 1
+#+REVEAL_HEAD_PREAMBLE: <meta name="description" content="geschichte, git-like CRDT">
+# +REVEAL_PREAMBLE: Applied to lambda
+# +REVEAL_POSTAMBLE: <p> Geoglyphs FP-prototype by C. Weilbach </p>
+
+
+* Introduction
+  - professional web frontend and backend developers with LivelyCode
+  - prior experience with JavaScript
+  - introduction with underscore.js and JSON data flow from web services (Sovanta)
+  - functional programming zealots
+    
+
+
+* Why?
+  
+
+
+* Lisp as the original JavaScript
+  - Lisp is the /original/ JavaScript
+  - JavaScript can be a *nice* language ("JavaScript the Good Parts")
+  - *composition*: dynamic extension of small core language
+  - "Lisp is the most important idea in Computer Science." Alan Kay
+  - interpreter of itself can be written on a half a book page (or a little bit
+    more :), see chapter 4 of SICP TODO)
+  - 100 year language. Paul Graham.
+  - 
+   
+
+* JavaScript limitations
+  - Brandon Eich Java Syntax more popular
+  - JavaScript language problems TODO destroyallsoftware.com
+  - comparison design effort JavaScript vs. Clojure
+    
+
+* Functional programming
+  - not just first class functions
+  - quote of Bret Victor about Haskell "Language for 21st century."
+  - but *pure* functions: functions that do not mutate their parameters or the
+    environment, but just return a value
+
+    
+  
+* Concrete problems with functional programming in JS
+  - But JavaScript core datastructures (JSON) are mutable
+  - functional programming possible, but very hard in an environment of general imperative programming
+  - libraries do not support functional programming in general
+  - current trend with TypeScript / EcmaScript class syntax rather in object
+    oriented direction like Java
+  - TODO Memes
+
+  
+* Live Coding
+  - redux, immutable: react state management inspired by Om TODO
+  - React material-ui 
+  - React native with planck TODO
+
+* References
+  - Success stories ClojureScript
+  - ClojureScript Introduction TODO
+  - Om/React background
+  - Functional Programming Clojure background TODO
