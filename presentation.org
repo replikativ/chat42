@@ -16,7 +16,7 @@
 #+REVEAL_HLEVEL: 1
 
 
-* Introduction
+* About us
   - professional frontend (app and web) and backend (JVM) developers with
     LivelyCode
   - core devs of /isomorphic/ replikativ
@@ -121,7 +121,7 @@
 * References
   - Source code and presentation: https://github.com/replikativ/chat42
   - [[https://github.com/boston-clojure/learning-clojure][Boston Clojure - learning resources]]
-  - [[https://github.com/bhauman/lein-figwheel/wiki/Quick-Start][Figwheel Quick Start]]
+  - [[https://github.com/bhauman/lein-figwheel/wiki/Quick-Start][Figwheel Quick Start]] (look at the FlappyBird Demo ;) )
   - [[https://www.railslove.com/stories/my-way-into-clojure-building-a-card-game-with-om-part-1][Background to Cljs webdev]]
   - [[https://github.com/clojure/clojurescript/wiki/Companies-Using-ClojureScript][Some company web sites using cljs]]: Capital One, CircleCI, Cisco, Rackspace,
     Thomson Reuters, ...

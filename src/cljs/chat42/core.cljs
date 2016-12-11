@@ -6,7 +6,7 @@
             [replikativ.crdt.cdvcs.stage :as s]
             [replikativ.crdt.cdvcs.realize :refer [head-value]]
             [cljs.core.async :refer [>! chan timeout]]
-            [superv.async :refer [throw-if-exception S] :as sasync]
+            [superv.async :refer [S] :as sasync]
             [cljsjs.material-ui] ;; TODO why?
             [om.next :as om :refer-macros [defui] :include-macros true]
             [om.dom :as dom :include-macros true]
@@ -36,7 +36,7 @@
 (defn create-msg [name text]
   {:text text :name name :date (js/Date.)})
 
-(def val-atom (atom {:messages [(create-msg "Replikativ.io" "Welcome!")]}))
+(defonce val-atom (atom {:messages [(create-msg "Replikativ.io" "Welcome!")]}))
 
 
 (defn start-local []
@@ -98,8 +98,10 @@
 
 (defn main [& args]
   (init)
-  (om/add-root! reconciler App (.getElementById js/document "app"))
   (set! (.-onclick (.getElementById js/document "send")) send-message!))
+
+;; for figwheel
+(om/add-root! reconciler App (.getElementById js/document "app"))
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
