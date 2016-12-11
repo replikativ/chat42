@@ -1,99 +1,53 @@
 (ns chat42.core
-  (:require [superv.async :refer [<?? S]]
-            [kabel.peer :refer [start stop] :as kabel]
-            [konserve
-             [filestore :refer [new-fs-store]]
-             [memory :refer [new-mem-store]]]
-            [replikativ
-             [peer :refer [server-peer]]
-             [stage :refer [connect! create-stage!]]]
-            [replikativ.crdt.simple-gset.stage :as gs]
-            [replikativ.crdt.ormap.realize :refer [stream-into-identity!]]
-            [replikativ.crdt.ormap.stage :as ors]))
+  (:require [replikativ.crdt.cdvcs.realize :refer [head-value stream-into-identity!]]
+            [replikativ.crdt.cdvcs.stage :as s]
+            [replikativ.stage :refer [create-stage! connect! subscribe-crdts!]]
+            [replikativ.peer :refer [client-peer server-peer]]
 
+            [kabel.peer :refer [start stop]]
+            [konserve.memory :refer [new-mem-store]]
+            [konserve.filestore :refer [new-fs-store delete-store]]
 
-(defn msg [txt n]
-  {:text txt :name n :date (java.util.Date.)})
+            [superv.async :refer [<?? <? S go-try go-loop-try]] ;; core.async error handling
+            [clojure.core.async :refer [chan go-loop go] :as async]))
+
+(def user "mail:alice@replikativ.io")
+(def cdvcs-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
+(def uri "ws://127.0.0.1:31744")
+(def val-atom (atom {:messages []}))
+(def store-path "/tmp/chat42-store")
+
+(def eval-fns
+  {'(fn [_ new] [new]) (fn [_ new] {:messages [new]})
+   'conj (fn [old new] (update old :messages conj new))})
+
+(def stream-eval-fns
+  {'(fn [_ new] [new]) (fn [a new] (reset! a {:messages [new]}) a)
+   'conj (fn [a new] (swap! a (fn [prev next] (update prev :messages conj next)) new) a)})
+
 
 (comment
-  (def user "mail:prototype@your-domain.com")
-  (def gset-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
-
-  (do
-    (def store-a (<?? S (new-mem-store)))
-    (def peer-a (<?? S (server-peer S store-a "ws://127.0.0.1:9090"))) ;; network and file IO
-    (<?? S (start peer-a))
-    (def stage-a (<?? S (create-stage! user peer-a)))
-    (<?? S (gs/create-simple-gset! stage-a :id gset-id)))
-
-
-  (<?? S (gs/add! stage-b [user gset-id] (msg "hi" "alice")))
+  (def store (<?? S (new-mem-store)))
   
-  (<?? S (gs/add! stage-b [user gset-id] (msg "hello" "bob")))
+  (def peer (<?? S (server-peer S store uri)))
 
-  (get-in @stage-b [user gset-id :state :elements])
-  
+  (<?? S (start peer))
 
-  (<?? S (connect! stage-a "ws://127.0.0.1:9091"))
-  
-  (<?? S (gs/add! stage-a [user gset-id] (msg "aloha" "charlie")))
+  ;; to interact with a peer we use a stage
+  (def stage (<?? S (create-stage! user peer)))
 
-  (get-in @stage-a [user gset-id :state :elements])
-  
+  ;; create a new CDVCS
+  (<?? S (s/create-cdvcs! stage :description "testing" :id cdvcs-id))
 
-  (<?? S (stop peer-a))
-  
-  (<?? S (stop peer-b))
+  (def close-stream
+    (stream-into-identity! stage [user cdvcs-id] stream-eval-fns val-atom))
+
+  (async/close! close-stream)
+
+  @val-atom
+
+  (<?? S (stop server))
 
   )
 
-(comment
 
-  (def val-atom (atom {}))
-  
-  (def stream-eval-fns
-    {'(fn [_ new] new) (fn [a new] (reset! a new) a)
-   'assoc (fn [a new] (swap! a assoc :foo new) a)})
-
-  
-  (def user "mail:prototype@your-domain.com") ;; will be used to authenticate you (not yet)
-  
-(def ormap-id #uuid "7d274663-9396-4247-910b-409ae35fe98d") ;; application specific datatype address
-
-(def store-a (<?? S (new-fs-store "/tmp/test"))) ;; durable store
-(def peer-a (<?? S (server-peer S store-a "ws://127.0.0.1:9090"))) ;; network and file IO
-(<?? S (start peer-a))
-(def stage-a (<?? S (create-stage! user peer-a))) ;; API for peer
-(<?? S (ors/create-ormap! stage-a :id ormap-id))
-
-(def store-b (<?? S (new-mem-store))) ;; store for testing
-(def peer-b (<?? S (server-peer S store-b "ws://127.0.0.1:9091")))
-(<?? S (start peer-b))
-(def stage-b (<?? S (create-stage! user peer-b)))
-(<?? S (ors/create-ormap! stage-b :id ormap-id))
-
-(<?? S (stream-into-identity! stage-b [user ormap-id] stream-eval-fns val-atom))
-
-;; now you are set up
-
-;; for this datatype metadata and commit data is separated
-;; [['assoc :bars]] is encoding a user-defined function application 
-;; of 'store to apply to some local state
-(<?? S (ors/assoc! stage-b [user ormap-id] :foo [['assoc :bars]]))
-(<?? S (ors/get stage-b [user ormap-id] :foo))
-
-(ffirst (get-in @stage-b [user ormap-id :state :adds :foo]))
-
-(<?? S (connect! stage-a "ws://127.0.0.1:9091")) ;; wire the peers up
-
-(<?? S (ors/get stage-a [user ormap-id] :foo)) ;; do they converge?
-;; accordingly we provide a dissoc operation on removal
-(<?? S (ors/dissoc! stage-a [user ormap-id] :foo [['dissoc :bars]])) 
-;; play around :)
-
-;; ...
-
-(<?? S (stop peer-a))
-(<?? S (stop peer-b))
-
-  )
