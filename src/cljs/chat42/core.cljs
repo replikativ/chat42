@@ -36,7 +36,7 @@
 (defn create-msg [name text]
   {:text text :name name :date (js/Date.)})
 
-(def val-atom (atom {:messages [(create-msg "Greetings" "Chat42")]}))
+(def val-atom (atom {:messages [(create-msg "Replikativ.io" "Welcome!")]}))
 
 
 (defn start-local []
@@ -69,7 +69,7 @@
   Object
   (componentDidMount [this]
                      (.log js/console "will mount")
-                     (om/set-state! this {:input-name "Chat42" :input-text "Hi"}))
+                     (om/set-state! this {:input-name "" :input-text ""}))
   (render [this]
     (let [app-state (om/props this)
           {:keys [input-name input-text]} (om/get-state this)]
@@ -77,13 +77,18 @@
        [:div
         [:div
          [:input {:value input-name
-                            :on-change
-                            (fn [e]
-                              (om/update-state! this assoc :input-name (target-val e)))}]
+                  :placeholder "Name"
+                  :on-change
+                  (fn [e]
+                    (om/update-state! this assoc :input-name (target-val e)))}]
          [:input {:value input-text
-                          :on-change (fn [e]
-                                       (om/update-state! this assoc :input-text (target-val e)))}]
-         [:button {:on-click (fn [_] (send-message! app-state (create-msg input-name input-text)))} "Send"]]
+                  :placeholder "Message"
+                  :on-change (fn [e]
+                               (om/update-state! this assoc :input-text (target-val e)))}]
+         [:button {:on-click (fn [_]
+                               (do
+                                 (send-message! app-state (create-msg input-name input-text))
+                                 (om/update-state! this assoc :input-text "")))} "Send"]]
         (map (fn [{:keys [text name date]}]
                [:p (str date ": " name " -> " text)])
              (:messages app-state))]))))
