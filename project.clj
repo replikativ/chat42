@@ -3,6 +3,8 @@
   :description "Web chat using replikativ"
   
   :url "http://example.com/FIXME"
+
+  :main chat42.core
   
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

@@ -1,4 +1,5 @@
 (ns chat42.core
+  (:gen-class)
   (:require [replikativ.crdt.cdvcs.realize :refer [head-value stream-into-identity!]]
             [replikativ.crdt.cdvcs.stage :as s]
             [replikativ.stage :refer [create-stage! connect! subscribe-crdts!]]
@@ -16,6 +17,7 @@
 (def uri "ws://127.0.0.1:31744")
 (def val-atom (atom {:messages []}))
 (def store-path "/tmp/chat42-store")
+(defonce server-state (atom nil))
 
 (def eval-fns
   {'(fn [_ new] [new]) (fn [_ new] {:messages [new]})
@@ -25,29 +27,37 @@
   {'(fn [_ new] [new]) (fn [a new] (reset! a {:messages [new]}) a)
    'conj (fn [a new] (swap! a (fn [prev next] (update prev :messages conj next)) new) a)})
 
+(defn start-all-services []
+  (let [store (<?? S (new-mem-store))
+        peer (<?? S (server-peer S store uri))
+        _ (<?? S (start peer))
+        stage (<?? S (create-stage! user peer))
+        close-stream (stream-into-identity! stage [user cdvcs-id] stream-eval-fns val-atom)]
+    (add-watch val-atom :messages
+               (fn [_ _ _ val]
+                 (let [{:keys [date name text]} (-> val :messages last)]
+                   (println (str "Date: " date " name: " name " text: " text)))))
+    (<?? S (s/create-cdvcs! stage :description "testing" :id cdvcs-id))
+    (println "Chat42 replikativ server peer up and running!")
+    {:store store
+     :peer peer
+     :close-stream close-stream
+     :stage stage}))
+
+(defn -main [& args]
+  (reset! server-state (start-all-services)))
 
 (comment
-  (def store (<?? S (new-mem-store)))
+
+  (def state (start-all-services))
   
-  (def peer (<?? S (server-peer S store uri)))
-
-  (<?? S (start peer))
-
-  ;; to interact with a peer we use a stage
-  (def stage (<?? S (create-stage! user peer)))
-
-  ;; create a new CDVCS
-  (<?? S (s/create-cdvcs! stage :description "testing" :id cdvcs-id))
-
-  (def close-stream
-    (stream-into-identity! stage [user cdvcs-id] stream-eval-fns val-atom))
-
-  (async/close! close-stream)
-
   @val-atom
+  
+  (async/close! (:close-stream state))
 
-  (<?? S (stop server))
+  (<?? S (stop (:peer state)))
 
+  (reset! val-atom nil)
   )
 
 
