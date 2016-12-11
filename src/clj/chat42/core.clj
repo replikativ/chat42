@@ -1,5 +1,5 @@
 (ns chat42.core
-  (:gen-class)
+  (:gen-class :main true)
   (:require [replikativ.crdt.cdvcs.realize :refer [head-value stream-into-identity!]]
             [replikativ.crdt.cdvcs.stage :as s]
             [replikativ.stage :refer [create-stage! connect! subscribe-crdts!]]
@@ -39,13 +39,16 @@
                    (println (str "Date: " date " name: " name " text: " text)))))
     (<?? S (s/create-cdvcs! stage :description "testing" :id cdvcs-id))
     (println "Chat42 replikativ server peer up and running!")
+    
     {:store store
      :peer peer
      :close-stream close-stream
      :stage stage}))
 
 (defn -main [& args]
-  (reset! server-state (start-all-services)))
+  (let [c (chan)]
+    (reset! server-state (start-all-services))
+    (<?? S c)))
 
 (comment
 
