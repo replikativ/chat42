@@ -100,7 +100,7 @@
   (init)
   (set! (.-onclick (.getElementById js/document "send")) send-message!))
 
-;; for figwheel
+;; for figwheel not in main
 (om/add-root! reconciler App (.getElementById js/document "app"))
 
 (defn on-js-reload []

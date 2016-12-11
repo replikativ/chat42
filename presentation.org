@@ -31,10 +31,10 @@
   [[./hickey_meme.jpg]]
 
 * Language design
-  - LISP was invented in *1958*
+  - LISP was invented/discovered in *1958*
   - Brandon Eich's design objective: Java-like script language
   - Time to design: *2 weeks !!!!*
-  - $\Rightarrow$ JavaScript core language problems: http://destroyallsoftware.com/talks/wat
+  - $\Rightarrow$ Some JavaScript core language problems: http://destroyallsoftware.com/talks/wat
   - comparison design effort JavaScript vs. Clojure: \\
     *2 weeks* vs. *2 years*
   - not to speak of all the history in Lisp language design which has since been
@@ -51,7 +51,6 @@
     became so popular
   - JS similar to imperative Lisps like Emacs-Lisp
   - *composition*: dynamic extension of small core language, like Scheme
-  - *interpreter of itself* can be expressed on half a page, (chapter 4 of SICP)
   - Dynamic languages (e.g. Python, Ruby, JavaScript) subset of features of
     Lisp: [[http://paulgraham.com/hundred.html][The hundred year language]]. Paul Graham.
     
@@ -63,16 +62,18 @@
 * List Processing
   - "Most important idea in Computer Science." Alan Kay
   - *Remove as much syntax as possible*
+  - *interpreter of itself* can be expressed on half a page, (chapter 4 of SICP)
   - All code is simplest data structure: List (homoiconic)
   - adapt language to problem \\
     $\Rightarrow$ *Lisp Macros*: Languages as libraries
     * *go-lang* as core.async: *no callback hell*
     * *prolog* as core.logic: *relational programming*
     * *statistics* as anglican: *probabilistic programming*
-    * *OCaml style pattern matching* as core.match
+    * *TypeScript* as with core.typed: *gradual typing*
+    * *OCaml style pattern matching* as core.match: *terse control flow*
       ...
  
-
+      
 * Functional programming
   - not just /first class/ functions (closures)
   - but *pure* functions: functions that do not mutate their parameters or the
@@ -105,8 +106,8 @@
 * Cljs 💘 JS
   - First class interop:
     * *All primitives* are JavaScript primitives
-    * All ClojureScript functions are *normal JavaScript functions*
-    * DataStructures can be easily converted from and to JSON
+    * all ClojureScript functions are *normal JavaScript functions*
+    * data structures can be easily converted from and to JSON
     * No overhead for large standard library or your code thanks to heavily optimizing
       *Google Closure compiler* (used for GMail, ...)
   - ClojureScript with functional programming strengthens the core value of
