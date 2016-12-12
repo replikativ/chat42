@@ -2,9 +2,12 @@
   (:require [konserve.memory :refer [new-mem-store]]
             [replikativ.peer :refer [client-peer]]
             [replikativ.stage :refer [create-stage! connect! subscribe-crdts!]]
-            [replikativ.crdt.cdvcs.realize :refer [stream-into-identity!]]
-            [replikativ.crdt.cdvcs.stage :as s]
-            [replikativ.crdt.cdvcs.realize :refer [head-value]]
+
+            [hasch.core :refer [uuid]]
+            
+            [replikativ.crdt.ormap.realize :refer [stream-into-identity!]]
+            [replikativ.crdt.ormap.stage :as s]
+            
             [cljs.core.async :refer [>! chan timeout]]
             [superv.async :refer [S] :as sasync]
             [cljsjs.material-ui] ;; TODO why?
@@ -22,22 +25,18 @@
 
 
 (def user "mail:alice@replikativ.io")
-(def cdvcs-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
+(def ormap-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
 (def uri "ws://127.0.0.1:31744")
 
-(def eval-fns
-  {'(fn [_ new] [new]) (fn [_ new] {:messages [new]})
-   'conj (fn [old new] (update old :messages conj new))})
-
 (def stream-eval-fns
-  {'(fn [_ new] [new]) (fn [a new] (reset! a {:messages [new]}) a)
-   'conj (fn [a new] (swap! a (fn [prev next] (update prev :messages conj next)) new) a)})
+  {'(fn [_ new] [new]) (fn [a new] (reset! a {(uuid new) new}) a)
+   'assoc (fn [a new] (swap! a assoc (uuid new) new))
+   'dissoc (fn [a new] (swap! a dissoc (uuid new)))})
 
 (defn create-msg [name text]
-  {:text text :name name :date (js/Date.)})
+  {:text text :name name :date (.getTime (js/Date.))})
 
-(defonce val-atom (atom {:messages [(create-msg "Replikativ.io" "Welcome!")]}))
-
+(defonce val-atom (atom {}))
 
 (defn start-local []
   (go-try S
@@ -53,14 +52,15 @@
    (def client-state (<? S (start-local)))
 
    (stream-into-identity! (:stage client-state)
-                          [user cdvcs-id]
+                          [user ormap-id]
                           stream-eval-fns
                           val-atom)
-   (<? S (s/create-cdvcs! (:stage client-state) :description "testing" :id cdvcs-id))
+   #_(<? S (s/create-ormap! (:stage client-state) :description "testing" :id ormap-id))
+   (<? S (s/create-ormap! (:stage client-state) :description "messages" :id ormap-id))
    (<? S (connect! (:stage client-state) uri))))
 
 (defn send-message! [app-state msg]
-  (go-try S (<? S (s/transact! (:stage client-state) [user cdvcs-id] [['conj msg]]))))
+  (go-try S (<? S (s/assoc! (:stage client-state) [user ormap-id] (uuid msg) [['assoc msg]]))))
 
 (defn target-val [e]
   (.. e -target -value))
@@ -90,8 +90,8 @@
                                  (send-message! app-state (create-msg input-name input-text))
                                  (om/update-state! this assoc :input-text "")))} "Send"]]
         (map (fn [{:keys [text name date]}]
-               [:p (str date ": " name " -> " text)])
-             (:messages app-state))]))))
+               [:p (str (.toDateString (js/Date. date)) ": " name " -> " text)])
+             (vals app-state))]))))
 
 (def reconciler
   (om/reconciler {:state val-atom}))
