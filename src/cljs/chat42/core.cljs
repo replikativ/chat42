@@ -55,7 +55,6 @@
                           [user ormap-id]
                           stream-eval-fns
                           val-atom)
-   #_(<? S (s/create-ormap! (:stage client-state) :description "testing" :id ormap-id))
    (<? S (s/create-ormap! (:stage client-state) :description "messages" :id ormap-id))
    (<? S (connect! (:stage client-state) uri))))
 
@@ -65,40 +64,65 @@
 (defn target-val [e]
   (.. e -target -value))
 
+(defn format-time [d]
+  (let [secs (-> (.getTime (js/Date.))
+                 (- d)
+                 (/ 1000)
+                 js/Math.floor)]
+    (cond
+      (>= secs 3600) (str (js/Math.floor (/ secs 3600)) " hours ago")
+      (>= secs 60) (str (js/Math.floor (/ secs 60)) " minutes ago")
+      (>= secs 0) (str secs  " seconds ago"))))
+
 (defui App
   Object
   (componentDidMount [this]
                      (.log js/console "will mount")
-                     (om/set-state! this {:input-name "" :input-text ""}))
+                     (om/set-state! this {:input-name "" :input-text "" :snackbar {:message "hello" :open false}}))
   (render [this]
     (let [app-state (om/props this)
-          {:keys [input-name input-text]} (om/get-state this)]
-      (html
-       [:div
-        [:div
-         [:input {:value input-name
-                  :placeholder "Name"
-                  :on-change
-                  (fn [e]
-                    (om/update-state! this assoc :input-name (target-val e)))}]
-         [:input {:value input-text
-                  :placeholder "Message"
-                  :on-change (fn [e]
-                               (om/update-state! this assoc :input-text (target-val e)))}]
-         [:button {:on-click (fn [_]
-                               (do
-                                 (send-message! app-state (create-msg input-name input-text))
-                                 (om/update-state! this assoc :input-text "")))} "Send"]]
-        (map (fn [{:keys [text name date]}]
-               [:p (str (.toDateString (js/Date. date)) ": " name " -> " text)])
-             (vals app-state))]))))
+          {:keys [input-name input-text snackbar]} (om/get-state this)]
+      (ui/mui-theme-provider
+       {:mui-theme (ui/get-mui-theme)}
+       (html
+        [:div.col-xs-12.mar-top-10.row
+         (ui/snackbar {:open (:open snackbar) :message (:message snackbar)})
+         [:div.col-xs-3]
+         [:div.col-xs-6
+          (ui/paper
+           {:className "mar-top-20"}
+           (ui/list
+            nil
+            (dom/div #js {:className "center-xs"}
+                     (ui/text-field {:floating-label-text "Name"
+                                     :on-change #(om/update-state! this assoc :input-name (target-val %))
+                                     :value input-name}))
+            (dom/div #js {:className "center-xs" :key "message"}
+                     (ui/text-field {:floating-label-text "Message"
+                                     :class-name "w-100"
+                                     :on-change #(om/update-state! this assoc :input-text (target-val %))
+                                     :value input-text}))
+            (dom/div #js {:className "center-xs"}
+                     (ui/raised-button {:label "Send"
+                                        :on-touch-tap
+                                        #(do
+                                           (send-message! app-state (create-msg input-name input-text))
+                                           (om/update-state! this assoc :input-text ""))}))
+            (ui/subheader nil "Messages")
+            (mapv (fn [{:keys [text name date]}]
+                    (ui/list-item {:primary-text
+                                   (dom/div nil name (dom/small nil (str " wrote " (format-time date))))
+                                   :secondary-text text
+                                   :secondary-text-lines 2
+                                   :key (uuid (str date))}))
+                  (sort-by :date > (vals app-state)))
+            (ui/divider nil)))]])))))
 
 (def reconciler
   (om/reconciler {:state val-atom}))
 
 (defn main [& args]
-  (init)
-  (set! (.-onclick (.getElementById js/document "send")) send-message!))
+  (init))
 
 ;; for figwheel not in main
 (om/add-root! reconciler App (.getElementById js/document "app"))
