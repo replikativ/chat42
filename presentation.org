@@ -102,6 +102,9 @@
   - Clojure and ClojureScript can be very nicely integrated, e.g. replikativ
 
 
+
+* Relax
+  [[./clojure_code_survival.jpeg]]
     
 * Cljs 💘 JS
   - First class interop:
