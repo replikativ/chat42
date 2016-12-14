@@ -19,7 +19,7 @@
 * About us
   - professional frontend (app and web) and backend (JVM) developers with
     LivelyCode
-  - core devs of /isomorphic/ replikativ
+  - core devs of /isomorphic/ http://replikativ.io
   - regular experience with JavaScript
   - introduction to FP with underscore.js and JSON data flow from web services
   - functional programming zealots
