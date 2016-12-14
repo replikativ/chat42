@@ -103,9 +103,6 @@
 
 
 
-* Relax
-  [[./clojure_code_survival.jpeg]]
-    
 * Cljs 💘 JS
   - First class interop:
     * *All primitives* are JavaScript primitives
@@ -117,6 +114,9 @@
     JavaScript: *Interactivity* and *Live Coding*
     
   
+* Relax
+  [[./clojure_code_survival.jpeg]]
+    
   
 * Live Coding
   - redux, immutable: react state management /inspired by/ [[https://github.com/omcljs/om/][Om]]

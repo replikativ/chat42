@@ -22,9 +22,15 @@
 (defonce server-state (atom nil))
 
 (def stream-eval-fns
-  {'(fn [_ new] [new]) (fn [a new] (reset! a {(uuid new) new}) a)
-   'assoc (fn [a new] (swap! a assoc (uuid new) new))
-   'dissoc (fn [a new] (swap! a dissoc (uuid new)))})
+  {'(fn [_ new] [new]) (fn [a new]
+                        (reset! a {(uuid new) new})
+                        a)
+   'assoc (fn [a new]
+            (swap! a assoc (uuid new) new)
+            a)
+   'dissoc (fn [a new]
+             (swap! a dissoc (uuid new))
+             a)})
 
 (defn start-all-services []
   (let [store (<?? S (new-mem-store))
