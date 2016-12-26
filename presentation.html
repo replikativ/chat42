@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Back to the future: Cljs</title>
+<meta name="author" content="(Konrad Kühne & Christian Weilbach)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/reveal.css"/>
+
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/theme/sky.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'http://cdn.jsdelivr.net/reveal.js/3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">Back to the future: Cljs</h1><h2 class="author">Konrad Kühne &amp; Christian Weilbach</h2><p class="date">Created: 2016-12-14 Wed 18:01</p>
+</section>
+
+
+<section>
+<section id="slide-org3fed4ef">
+<h2 id="org3fed4ef">About us</h2>
+<ul>
+<li>professional frontend (app and web) and backend (JVM) developers with
+LivelyCode</li>
+<li>core devs of <i>isomorphic</i> <a href="http://replikativ.io/">http://replikativ.io/</a></li>
+<li>regular experience with JavaScript</li>
+<li>introduction to FP with underscore.js and JSON data flow from web services</li>
+<li>functional programming zealots</li>
+<li>pragmatic: Making <i>more</i> money with <i>less</i> work now.</li>
+
+</ul>
+
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgef6dd99">
+<h2 id="orgef6dd99">Why?</h2>
+
+<div class="figure">
+<p><img src="./hickey_meme.jpg" alt="hickey_meme.jpg" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org932a405">
+<h2 id="org932a405">Language design</h2>
+<ul>
+<li>LISP was invented/discovered in <b>1958</b></li>
+<li>Brandon Eich's design objective: Java-like script language</li>
+<li>Time to design: <b>2 weeks !!!!</b></li>
+<li>\(\Rightarrow\) Some JavaScript core language problems: <a href="http://destroyallsoftware.com/talks/wat">http://destroyallsoftware.com/talks/wat</a></li>
+<li>comparison design effort JavaScript vs. Clojure: <br  />
+<b>2 weeks</b> vs. <b>2 years</b></li>
+<li>not to speak of all the history in Lisp language design which has since been
+ported to Clojure (for example MetaObject protocol as the "best" OO
+approach)</li>
+
+</ul>
+
+
+
+</section>
+</section>
+<section>
+<section id="slide-org4aa5523">
+<h2 id="org4aa5523">The original JavaScript</h2>
+<aside class="notes">
+<ul>
+<li>JavaScript can be a <b>nice</b> language ("JavaScript the Good Parts")</li>
+
+</ul>
+
+</aside>
+<ul>
+<li>Lisp (Scheme dialect) was intended as the <i>original</i> JavaScript, before Java
+became so popular</li>
+<li>JS similar to imperative Lisps like Emacs-Lisp</li>
+<li><b>composition</b>: dynamic extension of small core language, like Scheme</li>
+<li>Dynamic languages (e.g. Python, Ruby, JavaScript) subset of features of
+Lisp: <a href="http://paulgraham.com/hundred.html">The hundred year language</a>. Paul Graham.</li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-org985c4e1">
+<h2 id="org985c4e1">Language limitations</h2>
+
+<div class="figure">
+<p><img src="./callback-hell.jpg" alt="callback-hell.jpg" />
+</p>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgd414045">
+<h2 id="orgd414045">List Processing</h2>
+<ul>
+<li>"Most important idea in Computer Science." Alan Kay</li>
+<li><b>Remove as much syntax as possible</b></li>
+<li><b>interpreter of itself</b> can be expressed on half a page, (chapter 4 of SICP)</li>
+<li>All code is simplest data structure: List (homoiconic)</li>
+<li>adapt language to problem <br  />
+\(\Rightarrow\) <b>Lisp Macros</b>: Languages as libraries
+<ul>
+<li><b>go-lang</b> as core.async: <b>no callback hell</b></li>
+<li><b>prolog</b> as core.logic: <b>relational programming</b></li>
+<li><b>statistics</b> as anglican: <b>probabilistic programming</b></li>
+<li><b>TypeScript</b> as with core.typed: <b>gradual typing</b></li>
+<li><b>OCaml style pattern matching</b> as core.match: <b>terse control flow</b>
+&#x2026;</li>
+
+</ul></li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orgbacd2ea">
+<h2 id="orgbacd2ea">Functional programming</h2>
+<ul>
+<li>not just <i>first class</i> functions (closures)</li>
+<li>but <b>pure</b> functions: functions that do not mutate their parameters or the
+environment, but just return a value</li>
+<li><b>value semantics</b>: true equality</li>
+<li>Bret Victor about Haskell: "Language for 21st century."</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org29ee8af">
+<h2 id="org29ee8af">Functional programming in JS</h2>
+<ul>
+<li>JavaScript core datastructures (JSON) are mutable <br  />
+\(\Rightarrow\) no <i>real</i> equality, parameters mutated by functions</li>
+<li>FP theoretically possible, but practically impossible on top of imperative
+programming</li>
+<li>JS libraries do not support FP in general</li>
+<li>current trend with TypeScript / EcmaScript class syntax rather in <i>imperative
+object-oriented</i> direction like Java</li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-org7e8019b">
+<h2 id="org7e8019b">ClojureScript and Clojure</h2>
+<ul>
+<li>Clojure is a Lisp dialect for the JVM</li>
+<li><b>persistent datastructures</b> for FP</li>
+<li>ClojureScript is a port of Clojure to JavaScript</li>
+<li>both are <i>hosted languages</i>, exposing host primitives and abstractions instead
+of introducing their own: ClojureScript \(\neq\) Clojure</li>
+<li>Clojure brings live coding and strong concurrent programming to the JVM and
+CLR</li>
+<li>Clojure and ClojureScript can be very nicely integrated, e.g. replikativ</li>
+
+</ul>
+
+
+
+</section>
+</section>
+<section>
+<section id="slide-org148114c">
+<h2 id="org148114c">Cljs 💘 JS</h2>
+<ul>
+<li>First class interop:
+<ul>
+<li><b>All primitives</b> are JavaScript primitives</li>
+<li>all ClojureScript functions are <b>normal JavaScript functions</b></li>
+<li>data structures can be easily converted from and to JSON</li>
+<li>No overhead for large standard library or your code thanks to heavily optimizing
+<b>Google Closure compiler</b> (used for GMail, &#x2026;)</li>
+
+</ul></li>
+<li>ClojureScript with functional programming strengthens the core value of
+JavaScript: <b>Interactivity</b> and <b>Live Coding</b></li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-org743b50d">
+<h2 id="org743b50d">Relax</h2>
+
+<div class="figure">
+<p><img src="./clojure_code_survival.jpeg" alt="clojure_code_survival.jpeg" />
+</p>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orga7adc86">
+<h2 id="orga7adc86">Live Coding</h2>
+<ul>
+<li>redux, immutable: react state management <i>inspired by</i> <a href="https://github.com/omcljs/om/">Om</a></li>
+<li>React through <a href="http://www.material-ui.com/">material-ui</a></li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org96e0fc0">
+<h2 id="org96e0fc0">References</h2>
+<ul>
+<li>Source code and presentation: <a href="https://github.com/replikativ/chat42">https://github.com/replikativ/chat42</a></li>
+<li><a href="https://github.com/boston-clojure/learning-clojure">Boston Clojure - learning resources</a></li>
+<li><a href="https://github.com/bhauman/lein-figwheel/wiki/Quick-Start">Figwheel Quick Start</a> (look at the FlappyBird Demo ;) )</li>
+<li><a href="https://www.railslove.com/stories/my-way-into-clojure-building-a-card-game-with-om-part-1">Background to Cljs webdev</a></li>
+<li><a href="https://github.com/clojure/clojurescript/wiki/Companies-Using-ClojureScript">Some company web sites using cljs</a>: Capital One, CircleCI, Cisco, Rackspace,
+Thomson Reuters, &#x2026;</li>
+<li><a href="http://clojure.org/community/companies">Many more use Clojure now</a>: Facebook, Deutsche Bank, Daily Mail, Heroku,
+Netflix, Oracle, Salesforce, SoundCloud, Walmart Labs, &#x2026;</li>
+<li><a href="http://cljsrn.org/">ClojureScript + React Native</a></li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/head.min.js"></script>
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: true,
+center: true,
+slideNumber: 't',
+rollingLinks: true,
+keyboard: true,
+overview: true,
+margin: 0.10,
+minScale: 0.60,
+maxScale: 1.20,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
