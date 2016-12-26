@@ -1,17 +1,18 @@
 (defproject chat42 "0.1.0-SNAPSHOT"
-  
-  :description "Web chat using replikativ"
-  
-  :url "http://example.com/FIXME"
+
+  :description "Web chat using replikativ."
+
+  :url "http://github.com/replikativ/chat42"
 
   :main chat42.core
-  
+
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [io.replikativ/replikativ "0.2.0-SNAPSHOT"]
-                 [org.clojure/clojurescript "1.8.51"]
+
+  :dependencies [[org.clojure/clojure "1.9.0-alpha14"]
+                 [org.clojure/clojurescript "1.9.229"]
+
+                 [io.replikativ/replikativ "0.2.0"]
                  [sablono "0.7.6"]
                  [org.omcljs/om "1.0.0-alpha46" :exclusions [cljsjs/react]]
                  [cljs-react-material-ui "0.2.30"]]

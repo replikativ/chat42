@@ -1,7 +1,6 @@
 (ns chat42.core
   (:gen-class :main true)
   (:require [hasch.core :refer [uuid]]
-            
             [replikativ.crdt.ormap.realize :refer [stream-into-identity!]]
             [replikativ.crdt.ormap.stage :as s]
             [replikativ.stage :refer [create-stage! connect! subscribe-crdts!]]
@@ -38,12 +37,12 @@
         _ (<?? S (start peer))
         stage (<?? S (create-stage! user peer))
         close-stream (stream-into-identity! stage [user ormap-id] stream-eval-fns val-atom)]
+    ;; just to print messages to STDOUT
     (add-watch val-atom :messages
                (fn [_ _ _ val]
                  (let [{:keys [date name text]} (-> val vals last)]
                    (println (str "Date: " (.toString (java.util.Date. date)) " name: " name " text: " text)))))
     (<?? S (s/create-ormap! stage :description "messages" :id ormap-id))
-    #_(<?? S (s/create-cdvcs! stage :description "testing" :id cdvcs-id))
     (println "Chat42 replikativ server peer up and running!")
     
     {:store store

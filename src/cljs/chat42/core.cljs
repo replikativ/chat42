@@ -6,10 +6,8 @@
                                       subscribe-crdts!]]
 
             [hasch.core :refer [uuid]]
-            
             [replikativ.crdt.ormap.realize :refer [stream-into-identity!]]
             [replikativ.crdt.ormap.stage :as s]
-            
             [cljs.core.async :refer [>! chan timeout]]
             [superv.async :refer [S] :as sasync]
             [cljsjs.material-ui] ;; TODO why?
@@ -25,6 +23,9 @@
 
 (enable-console-print!)
 
+;; Have a look at the replikativ "Get started" tutorial to understand how the
+;; replikativ parts work: http://replikativ.io/tut/get-started.html
+
 ;; helper functions
 (defn format-time [d]
   (let [secs (-> (.getTime (js/Date.))
@@ -36,16 +37,11 @@
       (>= secs 60) (str (js/Math.floor (/ secs 60)) " minutes ago")
       (>= secs 0) (str  " seconds ago"))))
 
-;; interactive development
-(comment
-  (js/alert (format-time (- (.getTime (js/Date.))
-                            (* 180 1000)))))
 
-;; 1. replication middleware
+;; replikativ setup
 (def user "mail:alice@replikativ.io")
 (def ormap-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
 (def uri "ws://127.0.0.1:31744")
-#_(def uri "wss://topiq.es:443")
 
 (def stream-eval-fns
   {'(fn [_ new] [new]) (fn [a new]
@@ -59,7 +55,6 @@
              a)})
 
 (defn start-local []
-  ;; 2. language as libraries: core.async
   (go-try S
    (let [local-store (<? S (new-mem-store))
          local-peer (<? S (client-peer S local-store))
@@ -69,7 +64,6 @@
       :peer local-peer})))
 
 
-;; 3. functional state management
 (defonce val-atom (atom {}))
 
 
@@ -87,14 +81,15 @@
    (<? S (connect! (:stage client-state) uri))))
 
 
-;; 4. JavaScript interop
+;; Material UI with Om
+
 (defn create-msg [name text]
   {:text text
    :name name
    :date (.getTime (js/Date.))})
 
 
-;; 5. global state transition
+;; this is the only state changing function
 (defn send-message! [app-state msg]
   (go-try S (<? S (s/assoc! (:stage client-state)
                             [user ormap-id] (uuid msg) [['assoc msg]]))))
@@ -153,7 +148,7 @@
 ;; 6. React App
 (defui App
   Object
-  (componentDidMount [this]
+  (componentWillMount [this]
                      (om/set-state!
                       this
                       {:input-name ""

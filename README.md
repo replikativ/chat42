@@ -1,14 +1,27 @@
 # chat42
 
-A Clojure library designed to ... well, that part is up to you.
+This is a simple web-chat application which
+leverages [replikativ](http://replikativ.io) for its state management. 
 
 ## Usage
 
-FIXME
+Just run figwheel and edit `core.cljs` as needed. 
+
+~~~clojure
+lein figwheel
+~~~
+
+If you want to persist and distribute the state, run a server with:
+
+~~~clojure
+lein run
+~~~
+
+The web clients will automatically connect to this peer on localhost.
 
 ## License
 
-Copyright © 2016 FIXME
+Copyright © 2016 Konrad Kühne, Christian Weilbach
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
