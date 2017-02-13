@@ -36,7 +36,7 @@
         peer (<?? S (server-peer S store uri))
         _ (<?? S (start peer))
         stage (<?? S (create-stage! user peer))
-        close-stream (stream-into-identity! stage [user ormap-id] stream-eval-fns val-atom)]
+        stream (stream-into-identity! stage [user ormap-id] stream-eval-fns val-atom)]
     ;; just to print messages to STDOUT
     (add-watch val-atom :messages
                (fn [_ _ _ val]
@@ -47,7 +47,7 @@
     
     {:store store
      :peer peer
-     :close-stream close-stream
+     :stream stream
      :stage stage}))
 
 (defn -main [& args]
@@ -61,7 +61,7 @@
   
   @val-atom
   
-  (async/close! (:close-stream state))
+  (async/close! (-> state :stream :close-ch))
 
   (<?? S (stop (:peer state)))
 
