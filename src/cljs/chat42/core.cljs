@@ -1,4 +1,3 @@
-;; clean namespace system, compatible with Google Closure minification
 (ns chat42.core
   (:require [konserve.memory :refer [new-mem-store]]
             [replikativ.peer :refer [client-peer]]
@@ -21,10 +20,57 @@
   (:require-macros [superv.async :refer [go-try <? go-loop-try]]
                    [cljs.core.async.macros :refer [go-loop]]))
 
+;; 1. app constants
+(def user "mail:alice@replikativ.io")
+(def ormap-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
+(def uri "ws://127.0.0.1:31744")
+
+
 (enable-console-print!)
 
 ;; Have a look at the replikativ "Get started" tutorial to understand how the
 ;; replikativ parts work: http://replikativ.io/tut/get-started.html
+
+(def stream-eval-fns
+  {'assoc (fn [a new]
+            (swap! a assoc (uuid new) new)
+            a)
+   'dissoc (fn [a new]
+             (swap! a dissoc (uuid new))
+             a)})
+
+
+(defonce val-atom (atom {}))
+
+
+(defn setup-replikativ []
+  (go-try S
+    (let [local-store (<? S (new-mem-store))
+          local-peer (<? S (client-peer S local-store))
+          stage (<? S (create-stage! user local-peer))
+          stream (stream-into-identity! stage
+                                        [user ormap-id]
+                                        stream-eval-fns
+                                        val-atom)]
+      (<? S (s/create-ormap! stage
+                             :description "messages"
+                             :id ormap-id))
+      (connect! stage uri)
+      {:store local-store
+       :stage stage
+       :stream stream
+       :peer local-peer})))
+
+(declare client-state)
+;; this is the only state changing function
+(defn send-message! [app-state msg]
+  (s/assoc! (:stage client-state)
+            [user ormap-id]
+            (uuid msg)
+            [['assoc msg]]))
+
+
+
 
 ;; helper functions
 (defn format-time [d]
@@ -38,61 +84,12 @@
       (>= secs 0) (str  " seconds ago"))))
 
 
-;; replikativ setup
-(def user "mail:alice@replikativ.io")
-(def ormap-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
-(def uri "ws://127.0.0.1:31744")
-
-(def stream-eval-fns
-  {'(fn [_ new] [new]) (fn [a new]
-                        (reset! a {(uuid new) new})
-                        a)
-   'assoc (fn [a new]
-            (swap! a assoc (uuid new) new)
-            a)
-   'dissoc (fn [a new]
-             (swap! a dissoc (uuid new))
-             a)})
-
-(defn start-local []
-  (go-try S
-   (let [local-store (<? S (new-mem-store))
-         local-peer (<? S (client-peer S local-store))
-         stage (<? S (create-stage! user local-peer))]
-     {:store local-store
-      :stage stage
-      :peer local-peer})))
-
-
-(defonce val-atom (atom {}))
-
-
-(defn init []
-  (go-try S
-   (def client-state (<? S (start-local)))
-
-   (stream-into-identity! (:stage client-state)
-                          [user ormap-id]
-                          stream-eval-fns
-                          val-atom)
-   (<? S (s/create-ormap! (:stage client-state)
-                          :description "messages"
-                          :id ormap-id))
-   (<? S (connect! (:stage client-state) uri))))
-
-
 ;; Material UI with Om
-
 (defn create-msg [name text]
   {:text text
    :name name
    :date (.getTime (js/Date.))})
 
-
-;; this is the only state changing function
-(defn send-message! [app-state msg]
-  (go-try S (<? S (s/assoc! (:stage client-state)
-                            [user ormap-id] (uuid msg) [['assoc msg]]))))
 
 (defn target-val [e]
   (.. e -target -value))
@@ -103,8 +100,7 @@
            (ui/text-field
             {:floating-label-text "Name"
              :class-name "w-80"
-             :on-change #(om/update-state! comp
-                                           assoc :input-name (target-val %))
+             :on-change #(om/update-state! comp assoc :input-name (target-val %))
              :value input-name})))
 
 
@@ -126,6 +122,7 @@
                                  (om/update-state! comp assoc :input-text "")))
                              :value input-text}))))
 
+
 (defn send-button [comp input-text input-name]
   (let [app-state (om/props comp)]
     (dom/div #js {:className "center-xs"}
@@ -145,16 +142,16 @@
                  :key (uuid (str date))}))
 
 
-;; 6. React App
+;; React App
 (defui App
   Object
   (componentWillMount [this]
-                     (om/set-state!
-                      this
-                      {:input-name ""
-                       :input-text ""
-                       :snackbar {:message "hello"
-                                  :open false}}))
+    (om/set-state!
+     this
+     {:input-name ""
+      :input-text ""
+      :snackbar {:message "hello"
+                 :open false}}))
   (render [this]
     (let [app-state (om/props this)
           {:keys [input-name input-text snackbar]} (om/get-state this)]
@@ -179,7 +176,9 @@
   (om/reconciler {:state val-atom}))
 
 (defn main [& args]
-  (init))
+  (go-try S
+          (def client-state (<? S (setup-replikativ)))
+          (.error js/console "INITED")))
 
 ;; for figwheel not in main
 (om/add-root! reconciler App (.getElementById js/document "app"))
