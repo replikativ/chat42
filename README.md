@@ -13,6 +13,11 @@ brokers communication between peers over a websocket. The server will be
 available for node.js soon and is only necessary to ensure a communication
 channel.
 
+It was initially created as
+a
+[presentation for ClojureScript](https://github.com/replikativ/chat42/blob/master/presentation.org) in
+our local JavaScript meetup.
+
 
 ## Usage
 
