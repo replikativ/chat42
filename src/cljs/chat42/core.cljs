@@ -177,8 +177,7 @@
 
 (defn main [& args]
   (go-try S
-          (def client-state (<? S (setup-replikativ)))
-          (.error js/console "INITED")))
+          (def client-state (<? S (setup-replikativ)))))
 
 ;; for figwheel not in main
 (om/add-root! reconciler App (.getElementById js/document "app"))
