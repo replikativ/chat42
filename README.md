@@ -26,7 +26,7 @@ our local JavaScript meetup.
 
 ### Client development
 
-Just run figwheel and edit `core.cljs` as needed. 
+Just run figwheel and edit `core.cljs` as needed. If the replikativ parts are un clear, also have a look at the [API walkthrough](http://replikativ.io/tut/get-started.html).
 
 ~~~clojure
 lein figwheel
