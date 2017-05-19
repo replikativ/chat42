@@ -23,6 +23,8 @@ our local JavaScript meetup.
 
 ## Usage
 
+You need to have [Leiningen](https://leiningen.org/) installed.
+
 
 ### Client development
 
