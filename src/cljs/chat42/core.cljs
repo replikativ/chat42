@@ -31,6 +31,7 @@
 ;; Have a look at the replikativ "Get started" tutorial to understand how the
 ;; replikativ parts work: http://replikativ.io/tut/get-started.html
 
+;; lets transform the OR-MAP operations to the val-atom
 (def stream-eval-fns
   {'assoc (fn [a new]
             (swap! a assoc (uuid new) new)
@@ -40,9 +41,11 @@
              a)})
 
 
+;; this is our main app state
 (defonce val-atom (atom {}))
 
 
+;; standard setup
 (defn setup-replikativ []
   (go-try S
     (let [local-store (<? S (new-mem-store))
