@@ -23,7 +23,8 @@
 ;; 1. app constants
 (def user "mail:alice@replikativ.io")
 (def ormap-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
-(def uri "ws://127.0.0.1:31744")
+(def uri "wss://topiq.es/replikativ/ws" #_"ws://localhost:31744")
+
 
 
 (enable-console-print!)
@@ -178,7 +179,7 @@
 (def reconciler
   (om/reconciler {:state val-atom}))
 
-(defn main [& args]
+(defn ^:export main [& args]
   (go-try S
           (def client-state (<? S (setup-replikativ)))))
 
