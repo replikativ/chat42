@@ -16,7 +16,8 @@
                  [io.replikativ/replikativ "0.2.2"]
                  [sablono "0.8.0"]
                  [com.fzakaria/slf4j-timbre "0.3.5"]
-                 [org.omcljs/om "1.0.0-alpha46" :exclusions [cljsjs/react]]
+                 [org.omcljs/om "1.0.0-alpha46" :exclusions [cljsjs/react
+                                                             cljsjs/react-dom]]
                  [cljs-react-material-ui "0.2.44"]]
 
   :plugins [[lein-figwheel "0.5.8"]
