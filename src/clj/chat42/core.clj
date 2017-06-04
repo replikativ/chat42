@@ -1,5 +1,6 @@
 (ns chat42.core
   (:require [replikativ.peer :refer [server-peer]]
+            [replikativ.stage :refer [create-stage! connect!]]
 
             [kabel.peer :refer [start stop]]
             [konserve.memory :refer [new-mem-store]]
@@ -8,16 +9,26 @@
             [superv.async :refer [<?? S]] ;; core.async error handling
             [clojure.core.async :refer [chan] :as async]))
 
-(def uri "ws://127.0.0.1:31744")
+
+(def uri "ws://0.0.0.0:31744")
 
 (defn -main [& args]
-  (let [store (<?? S (new-mem-store) #_(new-fs-store "/tmp/chat42"))
-        peer (<?? S (server-peer S store uri))]
+  (let [store (<?? S #_(new-mem-store) (new-fs-store "/tmp/chat42-store"))
+        peer (<?? S (server-peer S store uri))
+        stage (<?? S (create-stage! "mail:your@email.com" peer))]
     (<?? S (start peer))
-    (println "Chat42 replikativ server peer up and running!" uri)
+    ;; NOTE: you do not need to connect to the test net, but you can :)
+    (connect! stage "ws://replikativ.io:8888")
+    (println "Your chat42 replikativ server peer is up and running! :)" uri)
     ;; HACK blocking main termination
     (<?? S (chan))))
 
+(comment
+  (require '[taoensso.timbre :as timbre])
+  (timbre/set-level! :info)
 
+  (stop peer)
+
+  (-main))
 
 

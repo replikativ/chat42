@@ -13,7 +13,7 @@
                  [org.clojure/clojurescript "1.9.229"]
 
                  [com.cognitect/transit-cljs "0.8.239" :scope "provided"]
-                 [io.replikativ/replikativ "0.2.2"]
+                 [io.replikativ/replikativ "0.2.4-SNAPSHOT"]
                  [sablono "0.8.0"]
                  [com.fzakaria/slf4j-timbre "0.3.5"]
                  [org.omcljs/om "1.0.0-alpha46" :exclusions [cljsjs/react

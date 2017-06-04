@@ -23,8 +23,11 @@
 ;; 1. app constants
 (def user "mail:alice@replikativ.io")
 (def ormap-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
-(def uri "wss://topiq.es/replikativ/ws" #_"ws://localhost:31744")
-
+(def uri
+  ;; test net
+  "ws://replikativ.io:8888"
+  ;; alternatively use your own peer :)
+  #_"ws://localhost:31744")
 
 
 (enable-console-print!)
