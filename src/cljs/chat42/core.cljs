@@ -16,16 +16,19 @@
             [cljs-react-material-ui.icons :as ic]
             [sablono.core :as html :refer-macros [html]]
             [cljs-react-material-ui.core :as ui]
-            [cljs-react-material-ui.icons :as ic])
+            [cljs-react-material-ui.icons :as ic]
+            [taoensso.timbre :as timbre])
   (:require-macros [superv.async :refer [go-try <? go-loop-try]]
                    [cljs.core.async.macros :refer [go-loop]]))
+
 
 ;; 1. app constants
 (def user "mail:alice@replikativ.io")
 (def ormap-id #uuid "7d274663-9396-4247-910b-409ae35fe98d")
 (def uri
   ;; test net
-  "ws://replikativ.io:8888"
+  #_"ws://replikativ.io:8888"
+  "wss://topiq.es/replikativ/ws"
   ;; alternatively use your own peer :)
   #_"ws://localhost:31744")
 
@@ -37,16 +40,18 @@
 
 ;; lets transform the OR-MAP operations to the val-atom
 (def stream-eval-fns
-  {'assoc (fn [a new]
-            (swap! a assoc (uuid new) new)
+  {'assoc (fn [S a new]
+            (swap! a update-in [:posts] conj new)
             a)
-   'dissoc (fn [a new]
-             (swap! a dissoc (uuid new))
+   'dissoc (fn [S a new]
+             (swap! a update-in [:posts] disj new)
              a)})
 
 
 ;; this is our main app state
-(defonce val-atom (atom {}))
+(defonce val-atom (atom {:posts #{}
+                         :snackbar {:open false
+                                    :message ""}}))
 
 
 ;; standard setup
@@ -62,6 +67,8 @@
       (<? S (s/create-ormap! stage
                              :description "messages"
                              :id ormap-id))
+      ;; HACK to display OR-Map creation status message for a moment
+      (<? S (timeout 1000))
       (connect! stage uri)
       {:store local-store
        :stage stage
@@ -100,6 +107,28 @@
 
 (defn target-val [e]
   (.. e -target -value))
+
+(timbre/merge-config!
+ {:appenders {:chat42status
+              {:enabled? true
+               :fn
+               (fn [data]
+                 (let [{:keys [msg_]} data
+                       {:keys [event] :as msg} (cljs.reader/read-string (force msg_))
+                       m (case event
+                           :connected (str "Connected to " (:url msg))
+                           :connecting-to (str "Connecting to " (:url msg))
+                           :creating-ormap (str "Creating OR-Map CRDT.")
+;                           :streaming-ormap (str "Fetching data.")
+                           :fetching-commits (str "Fechting commits.")
+                           :websocket-error "Connection error. Reconnecting ..."
+                           nil)]
+                   (when m
+                     (swap! val-atom assoc
+                            :snackbar {:open true
+                                       :message m}))))}}})
+
+
 
 
 (defn name-field [comp input-name]
@@ -156,17 +185,16 @@
     (om/set-state!
      this
      {:input-name ""
-      :input-text ""
-      :snackbar {:message "hello"
-                 :open false}}))
+      :input-text ""}))
   (render [this]
-    (let [app-state (om/props this)
-          {:keys [input-name input-text snackbar]} (om/get-state this)]
+    (let [{:keys [snackbar posts] :as state} (om/props this)
+          {:keys [input-name input-text]} (om/get-state this)]
       (ui/mui-theme-provider
        {:mui-theme (ui/get-mui-theme)}
        (html
         [:div.col-xs-12.mar-top-10.row
-         (ui/snackbar {:open (:open snackbar) :message (:message snackbar)})
+         (ui/snackbar {:open (:open snackbar) :message (:message snackbar)
+                       :auto-hide-duration 10000})
          [:div.col-xs-3]
          [:div.col-xs-6
           (ui/paper {:className "mar-top-20"}
@@ -176,7 +204,7 @@
                      (message-field this input-text input-name)
                      (send-button this input-text input-name)
                      (ui/subheader nil "Messages")
-                     (mapv message-item (sort-by :date > (vals app-state)))
+                     (mapv message-item (sort-by :date > posts))
                      (ui/divider nil)))]])))))
 
 (def reconciler

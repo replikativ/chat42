@@ -2,7 +2,7 @@
 
 We have
 a
-[demo deployed on IPFS](https://ipfs.io/ipfs/QmSzjWbQkHXthMZBHvqwW6hbAC1RUEKUbdh33Vrb66reqH/).
+[demo deployed on IPFS](https://ipfs.io/ipfs/Qmc2fKMZf6o3N7bafPKMkXvhcfBaoVS5uTRXTBUGpeVzFr/).
 It uses a websocket connection to our test server on topiq.es. This is a simple
 web-chat application which leverages [replikativ](http://replikativ.io) for its
 state management.
@@ -40,32 +40,33 @@ Just run figwheel and edit `core.cljs` as needed. If the replikativ parts are un
 lein figwheel
 ~~~
 
-This allows you to develop the client in an offline mode.
+This allows you to develop the client against our test server.
 
 ### Server peer
 
-If you want to persist and distribute the state, run the server with:
+If you want to persist and distribute your own state, run the server with:
 
 ~~~clojure
 lein run
 ~~~
 
-The server uses an in-memory backend to allow quick resets, if you want to
-persist the data on disk, use a filestore by [commenting out the mem-store instead](https://github.com/replikativ/chat42/blob/master/src/clj/chat42/core.clj#L14):
+The server will automatically connect to our new test net and dump potentially a
+few gigabytes to your disk. If you don't want this, comment out:
 
 ~~~clojure
-(<?? S #_(new-mem-store) (new-fs-store "/tmp/chat42"))
+(connect! stage "ws://replikativ.io")
 ~~~
 
-The web clients will automatically connect to this peer on `localhost`. You can
-now open two tabs and the two chat clients will communicate over the server and
-update instantly. 
+to 
 
-If you want to open the socket on a broader interface,
-change
-[the uri string](https://github.com/replikativ/chat42/blob/master/src/clj/chat42/core.clj#L11).
-This is necessary if you want to connect clients from the local network or the
-internet.
+~~~clojure
+#_(connect! stage "ws://replikativ.io")
+~~~
+
+in [core.clj](https://github.com/replikativ/chat42/blob/master/src/clj/chat42/core.clj#L14)
+
+You also have to change the uri in `core.cljs` to make the client connect to
+your server and not the test server.
 
 If you have any problems, questions or suggestions, please
 join our gitter chat.
