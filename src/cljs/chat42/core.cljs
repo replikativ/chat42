@@ -101,7 +101,9 @@
 ;; Material UI with Om
 (defn create-msg [name text]
   {:text text
-   :name name
+   :name (if (= name "")
+            "Anonymous"
+            name)
    :date (.getTime (js/Date.))})
 
 
