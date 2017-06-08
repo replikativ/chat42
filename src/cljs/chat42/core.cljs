@@ -164,6 +164,7 @@
     (dom/div #js {:className "center-xs"}
              (ui/raised-button
               {:label "Send"
+               :disabled (= input-text "")
                :on-touch-tap
                #(do
                   (send-message! app-state (create-msg input-name input-text))
